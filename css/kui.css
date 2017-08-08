@@ -195,6 +195,61 @@ html.kui body, body.kui {
     background-color: #cbd6e2;
 }
 
+.kui button.close {
+	-webkit-user-select: inherit;
+    -moz-user-select: inherit;
+    -ms-user-select: inherit;
+    user-select: inherit;
+    background: none;
+    border: 0;
+    display: inline;
+    font: inherit;
+    line-height: inherit;
+    margin: 0;
+    outline-offset: 0;
+    padding: 0;
+    text-align: inherit;
+    text-transform: inherit;
+	transition: all .15s ease-out;
+    height: 16px;
+    right: 24px;
+    top: 24px;
+    width: 16px;
+    z-index: 1;
+	-webkit-align-self: center;
+    align-self: center;
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: currentColor;
+    position: static;
+    transform: scale(.5);
+    vertical-align: text-top;
+}
+
+.kui button.close>svg {
+	display: block;
+	overflow: hidden;
+	color: inherit;
+}
+
+.kui button.close>svg>path {
+	fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.kui button.close:after {
+	transition: all .15s ease-out;
+    border-radius: 100%;
+    content: " ";
+    left: 50%;
+    padding: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+
 .kui button.select-modal {
 	display: inline-block;
     border: 1px solid #cbd6e2;
@@ -320,6 +375,10 @@ html.kui body, body.kui {
 	float: right;
 }
 
+.kui .text-help {
+	color: #7c98b6 !important;
+}
+
 .kui .text-error {
 	color: #f2545b !important;
 }
@@ -404,10 +463,8 @@ html.kui body, body.kui {
 }
 
 .kui label.checkbox>span:nth-child(1)>span:nth-child(2) {
-	position: relative;
-    top: 1px;
     padding-left: 12px;
-	line-height: normal;
+	line-height: 22px;
 	font-size: 16px;
 }
 
@@ -445,6 +502,18 @@ html.kui body, body.kui {
 	color: #0091ae;
     font-size: 16px;
     word-break: normal !important;
+}
+
+/* 背景掩码 */
+
+.kui-mask {
+	position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+	background-color: rgba(45,62,80,0.79);
 }
 
 /* 加载动画 */
@@ -491,6 +560,55 @@ html.kui body, body.kui {
   	}
 }
 
+/* 输入框组样式 */
+
+.kui-input-group {
+	display: table;
+    border-collapse: separate;
+}
+
+.kui-input-group>* {
+	display: table-cell!important;
+}
+
+.kui-input-group>span {
+	display: inline-block;
+    border-top: 1px solid #cbd6e2;
+    border-bottom: 1px solid #cbd6e2;
+    padding: 12px;
+    max-width: 100%;
+    line-height: 14px;
+    color: #506e91;
+    font-family: Avenir Next W02,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-shadow: 0 0 1px transparent;
+    vertical-align: middle;
+    white-space: nowrap;
+    background-color: #eaf0f6;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.kui-input-group>input {
+	border-radius: 0;
+}
+
+.kui-input-group>*:first-child {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.kui-input-group>*:last-child {
+	border-right: 1px solid #cbd6e2;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
 /* kui布局样式 */
 
 .kui-layout {
@@ -498,17 +616,17 @@ html.kui body, body.kui {
 	height: 100%;
 }
 
-.kui-layout-v3-bf {
+.kui-layout-v2-bf {
 	position: relative;
 }
 
-.kui-layout-v3-bf>div:nth-child(1) {
+.kui-layout-v2-bf>div:nth-child(1) {
 	overflow-y: auto;
 	width: 100%;
 	height: 100%;
 }
 
-.kui-layout-v3-bf>div:nth-child(2) {
+.kui-layout-v2-bf>div:nth-child(2) {
 	position: absolute;
 	left: 0;
 	bottom: 0;
@@ -863,6 +981,46 @@ html.kui body, body.kui {
 	color: #ebebeb;
 }
 
+/* kui标签栏 */
+
+.kui-tagbar>ul {
+	display: block;
+	overflow: hidden;
+	margin: 0;
+	list-style: none!important;
+}
+
+.kui-tagbar>ul>li {
+	display: inline-block;
+	float: left;
+	margin-right: 10px;
+	margin: 0 10px 10px 0;
+}
+
+.kui-tagbar>ul>li>div {
+	position: relative;
+	overflow: hidden;
+	border-radius: 2px;
+	padding: 4px 8px;
+	line-height: 22px;
+	color: currentColor;
+	font-size: 12px;
+	background-color: #eaf0f6;
+	-webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+.kui-tagbar>ul>li>div>span {
+	display: -ms-inline-flexbox;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: top;
+}
+
 /* kui侧边导航栏 */
 
 .kui-sidenav {
@@ -1092,9 +1250,11 @@ html.kui body, body.kui {
 }
 
 .kui-table td {
+	overflow: hidden;
 	padding: 2.4px 12px;
 	max-width: 300px;
 	height: 40px;
+	font-size: 13px;
 	white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -1106,8 +1266,8 @@ html.kui body, body.kui {
 /* kui表格盒子样式 */
 
 .kui-table-box {
+	position: relative;
 	overflow: hidden;
-	overflow-x: auto;
 }
 
 .kui-table-box nav {

@@ -518,6 +518,15 @@ function(e, t, n) {
 	}) : "undefined" != typeof module && module.exports && (module.exports = sweetAlert)
 }(window, document);
 
+function kuiSuccess(text, title, btn, callback) {
+	swal({
+		title : title ? typeof(title) == 'function' ? title() : title : '',
+		text : text ? typeof(text) == 'function' ? text() : text : '',
+		type : 'success',
+		confirmButtonText : btn
+	}, callback);
+}
+
 function kuiError(text, title, btn, callback) {
 	swal({
 		title : title ? typeof(title) == 'function' ? title() : title : '',
@@ -1495,7 +1504,11 @@ function KuiTableHeadColumn(context, row, index, inst) {
 	var _inst = inst;
 	
 	var _fieldName = _inst.data('field-name');
+	_fieldName = typeof(_fieldName) == 'undefined' ? '' :  _fieldName + '';
+	
 	var _fieldDefault = _inst.data('field-default');
+	_fieldDefault = typeof(_fieldDefault) == 'undefined' ? '' : _fieldDefault + '';
+	
 	var _fieldFormat = _inst.data('field-format');
 
 	var _case = $(_inst.children().get(0));
@@ -1513,12 +1526,12 @@ function KuiTableHeadColumn(context, row, index, inst) {
 	
 	//获得列绑定的字段名称
 	this.getFieldName = function() {
-		return _fieldName ? _fieldName : '';
+		return _fieldName;
 	};
 	
 	//获得列绑定的字段默认值
 	this.getFieldDefault = function() {
-		return _fieldDefault ? _fieldDefault : '';
+		return _fieldDefault;
 	};
 	
 	this.getFieldFormat = function() {
@@ -1744,8 +1757,13 @@ function KuiTableBody(context, inst) {
 						for(var i = 0; i < columns.length; i++) {
 							var col = columns[i];
 							if(col.isFieldColumn()) {
-								var value = eval('rowData.' + col.getFieldName());
-								value = value ? typeof(value) == 'function' ? value() : value : col.getFieldDefault();
+								var value = '';
+								if(col.getFieldName()) {
+									value = eval('rowData.' + col.getFieldName());
+									value = typeof(value) == 'undefined' ? col.getFieldDefault() : (typeof(value) == 'function' ? value() : value);
+								}else {
+									value = col.getFieldDefault();
+								}
 								var format = col.getFieldFormat();
 								if(format) {
 									value = format(value);
@@ -1923,8 +1941,11 @@ function KuiTableBox(inst) {
 	var _table = null; //表格对象
 	var _paginator = null; //分页器对象
 	
+	var _loadingMask = null; //加载动画背景
+	var _loading = null; //加载动画
+	
 	(function() {
-		var list = $('>table', _inst);
+		var list = $('table', _inst);
 		if(list.length > 0) {
 			_table = kui($(list[0]).data('bind'));
 		}
@@ -1950,6 +1971,38 @@ function KuiTableBox(inst) {
 	
 	this.getPaginator = function() {
 		return _paginator;
+	};
+	
+	this.showLoading = function(callback) {
+		if(!_loadingMask) {
+			_loadingMask = $('<div class="kui-mask"></div>');
+			_inst.append(_loadingMask);
+		}
+		if(!_loading) {
+			_loading = $('<div class="kui-loading" style="position:absolute;top:50%;left:50%;margin:-10px 0 0 -30px;"><div></div><div></div><div></div></div>');
+			_inst.append(_loading);
+		}
+		_inst.css('overflow-x', 'hidden');
+		_loadingMask.fadeIn('fast');
+		_loading.show(0, function() {
+			if(callback) {
+				callback();
+			}
+		});
+	};
+	
+	this.hideLoading = function(callback) {
+		if(_loading) {
+			_loading.hide();
+		}
+		if(_loadingMask) {
+			_loadingMask.fadeOut('fast', function() {
+				_inst.css('overflow-x', 'auto');
+				if(callback) {
+					callback();
+				}
+			});
+		}
 	};
 }
 
@@ -2168,7 +2221,7 @@ function KuiModal(inst) {
 		}
 	};
 	
-	this.open = function() {
+	this.open = function(callback) {
 		if(_status == 'close') {
 			_status = 'open';
 			_inst.fadeIn('fast');
@@ -2179,10 +2232,13 @@ function KuiModal(inst) {
 			if(_options.onOpened) {
 				_options.onOpened();
 			}
+			if(callback) {
+				callback();
+			}
 		}
 	};
 	
-	this.close = function() {
+	this.close = function(callback) {
 		if(_status == 'open') {
 			_status = 'close';
 			_box.removeClass('show');
@@ -2190,6 +2246,9 @@ function KuiModal(inst) {
 				_inst.fadeOut('fast', function() {
 					if(_options.onClosed) {
 						_options.onClosed();
+					}
+					if(callback) {
+						callback();
 					}
 				});
 			}, 300);
@@ -2295,13 +2354,16 @@ function KuiSidebarModal(inst) {
 		}
 	};
 	
-	this.close = function() {
+	this.close = function(callback) {
 		if(_status == 'open') {
 			_status = 'close';
 			var next = function() {
 				_inst.fadeOut('fast', function() {
 					if(_options.onClosed) {
 						_options.onClosed(_this);
+					}
+					if(callback) {
+						callback(_this);
 					}
 					_data = null;
 				});
@@ -2382,6 +2444,7 @@ function KuiFormField(inst, index) {
 					
 					this.reset = function() {
 						_inst.html(_defaultValue);
+						_this.error('');
 					};
 				})(_inst);
 				break;
@@ -2421,6 +2484,7 @@ function KuiFormField(inst, index) {
 						
 						this.reset = function() {
 							_inst.val(_defaultValue);
+							_this.error('');
 						};
 						
 						_inst.focus(function() {
@@ -2464,6 +2528,7 @@ function KuiFormField(inst, index) {
 						
 						this.reset = function() {
 							_inst.val(_defaultValue);
+							_this.error('');
 						};
 						
 						_inst.focus(function() {
@@ -2507,6 +2572,7 @@ function KuiFormField(inst, index) {
 						
 						this.reset = function() {
 							_btn.reset();
+							_this.error('');
 						};
 						
 						_inst.focus(function() {
@@ -2604,7 +2670,7 @@ function KuiModalForm(inst) {
 	};
 	
 	this.showBody = function(callback) {
-		_body.show(function() {
+		_body.show(0, function() {
 			if(callback) {
 				callback(_this);
 			}
@@ -2788,10 +2854,10 @@ function KuiLayout(inst) {
 	};
 	
 	switch(_type) {
-		case 'v3-bf':
+		case 'v2-bf':
 			var list = $('>div', _inst);
 			if(list.length >= 2) {
-				_inst.addClass('kui-layout-v3-bf');
+				_inst.addClass('kui-layout-v2-bf');
 				_provider = new (function() {
 					var _body = $(list[0]);
 					var _footer = $(list[1]);
